@@ -2,13 +2,15 @@
 ## Overview
 This lab is a deeper dive into a focus on domain administration, Group Policy engineering, workstation management, and troubleshooting. Instead of showing how to install AD, it documents the actual challenges involved in maintaining a Windows domain — including domain controller failures, secure channel issues, SYSVOL outages, GPO misapplication, drive‑mapping problems, Restricted Groups enforcement, and domain‑join instability.
 
-What began as a basic AD deployment quickly turned into a into rigorous lesson on how Windows domains behave under stress. A straightforward setup escalated into rebuilding the domain controller, reinstalling the client workstation, diagnosing trust failures, and dealing with Windows Server 2025’s instability — ultimately teaching me far more about Active Directory than any guide or textbook could.
+What began as a basic AD deployment quickly turned into a into rigorous lesson on how Windows domains behave under stress. A straightforward setup escalated into rebuilding the domain controller, reinstalling the client workstation, diagnosing trust failures, and dealing with Windows Server 2025’s instability.
 
-This lab builds on my previous project, where I deployed a Windows Server 2025 VM, installed AD DS, configured DNS, and created a clean OU structure modeled after a small corporate environment. From there, the environment expanded into a full enterprise simulation with users, groups, GPOs, drive mappings, folder redirection, AppLocker rules, Restricted Groups, and real troubleshooting incidents that mirror what administrators face in production networks.
+This lab builds on my previous project (see my profile for that repository) where I deployed a Windows Server 2025 VM, installed AD DS, configured DNS, and created a clean OU structure modeled after a small corporate environment. From there, the environment expanded into a full enterprise simulation with users, groups, GPOs, drive mappings, folder redirection, AppLocker rules, Restricted Groups, and real troubleshooting incidents that mirror what administrators face in production networks.
 
 ## Table of Contents
 - [Overview](#overview)
 - [Lab Architecture](#lab-architecture)
+- [Security Policies](#security-policies)
+- [User Policies](#user-policies)
 - [Troubleshooting Incidents](#troubleshooting-incidents)
   - [Drive Mapping Failure](#drive-mapping-failure-root-cause-dc-rename)
   - [Restricted Groups Not Applying](#restricted-groups-not-applying)
@@ -36,7 +38,7 @@ A minimal, realistic Active Directory environment built to simulate a small corp
 
 
 
-The project continued from my last lab (see my profile for that repository) where I deployed a Windows Server 2025 VM and installed Active Directory Domain Services. I created a domain, set up DNS, and built out a clean OU structure that resembled a small corporate environment. 
+## Security Policies
 
 The first major task was enforcing password policies. I created a new GPO and configured minimum password length.
 
@@ -69,11 +71,11 @@ Next came Restricted Groups, and this is where everything started to unravel. My
 <img width="1106" height="621" alt="Screenshot 2026-07-30 201928" src="https://github.com/user-attachments/assets/15863029-60d2-4be0-af6d-f2a7c3a5a27d" />
 
 
-Running gpresult /r showed that the workstation was receiving domain GPOs. Since this was my first time, I think I got really mixed up here. Seeing all the different groups had me convinced that something deeper was wrong when I was only expecting the groups I had setup in the DC.
+Running gpresult /r showed that the workstation was receiving domain GPOs. Since this was my first time, I think I got really mixed up here. Seeing the mixture of local and domain groups the client was a member of had me convinced that something deeper was wrong when I was only expecting the only the domain groups I had setup in the DC.
 
 <img width="928" height="692" alt="Screenshot 2026-07-30 212228" src="https://github.com/user-attachments/assets/d06b0a6b-45bd-4c60-8816-bc92a597d6d1" />
 
-This led me down a path of non-stop troubleshooting. I was double-checking Users, Groups, GPO placement, even going into my dns and ip configs to test if there was a mistake I had made. 
+This led me down a path of non-stop troubleshooting. I was double-checking Users, Groups, GPO placement, even going into my dns and ip configs to test if there was a mistake I had made. I've been told that a lot of issues a DC faces comes down to dns configuration, which is why I gravitate toward that as a solution when things go awry. 
 
 <img width="2375" height="1023" alt="Screenshot 2026-08-03 130038" src="https://github.com/user-attachments/assets/68ea1c28-c678-495a-a2b9-3a4371b88013" />
 
@@ -82,9 +84,9 @@ This led me down a path of non-stop troubleshooting. I was double-checking Users
 <img width="900" height="641" alt="Screenshot 2026-08-03 131323" src="https://github.com/user-attachments/assets/86d7e8b8-6b02-4e10-8f83-047c5d862296" />
 
 My troubleshooting ended up advancing me into systems that felt above my knowledge. To compare this to a Helpdesk equivalent, it was as if I escalated the issue to a tier 2/3, maybe even sys admin level. I eventually landed on trying to access SYSVOL, but it failed. 
-Next, I checked the secure channel using nltest /sc_verify. It failed too. I checked DNS, Netlogon, Kerberos, and SMB connectivity. Everything pointed upstream — the domain controller itself was failing.
-Then the domain controller completely froze. SYSVOL and Netlogon were unavailable. The workstation couldn’t authenticate. Group Policy processing collapsed entirely. This wasn’t a simple GPO issue — it was a full domain meltdown. The workstation lost trust with the domain, and nothing I tried could repair the secure channel.
-At this point I was willing to try anything so I tried the most risky move - deleting the DC, not knowing what exactly would happen but hoping that I could simply force a total reset within the server. As you can probably guess, I was locked out of everything on the DC and Client side as the client was connected to a domain that no longer existed so I had no choice but to rebuild both the domain controller and the Windows 11 client from scratch. 
+Next, I checked the secure channel using nltest /sc_verify. It failed too. I checked DNS, Netlogon, Kerberos, and SMB connectivity. Everything pointed upstream — it was as if the domain controller itself was failing.
+Then the domain controller completely froze. SYSVOL and Netlogon were unavailable. The workstation couldn’t authenticate. Group Policy processing collapsed entirely. This wasn’t a simple GPO issue anymore. The workstation lost trust with the domain, and nothing I tried could repair the secure channel.
+At this point I was willing to attempt anything so I played the most risky move - deleting the DC, not knowing what exactly would happen but hoping that I could simply force a total reset within the server. As you can probably guess, I was locked out of everything on the DC and Client side as the client was connected to a domain that no longer existed so I had no choice but to rebuild both the domain controller and the Windows 11 client from scratch. 
 
 <img width="1012" height="796" alt="Screenshot 2026-08-03 140404" src="https://github.com/user-attachments/assets/1cba137c-cd8a-4cbd-9328-ee7930bd9b9b" />
 
@@ -104,6 +106,9 @@ Once everything was rebuilt, I revisited Restricted Groups and discovered the re
 
 
 [(video dwight no longer admin)](https://github.com/user-attachments/assets/14269c7b-8630-4669-90fb-0c48add126ca)
+
+
+## User Policies
 
 
 With the core security policies in place, I moved on to user experience and workstation control. I deployed a custom corporate wallpaper through Group Policy 
@@ -225,7 +230,9 @@ Others, like Toby, ran into problems. His folder wouldn’t redirect at all, whi
 
 
 ## Lessons Learned
-Throughout the entire lab, I ran into issues that forced me to dig deeper into how Active Directory actually works. I learned how to diagnose secure channel failures, how to interpret gpresult HTML reports, how SYSVOL availability affects GPO processing, how AppLocker behaves when allow rules are missing, and how folder redirection silently fails when permissions aren’t perfect. I also learned how easy it is for a domain controller to become unstable on an administrative level — especially Windows Server 2025.
-And that leads to one of the biggest takeaways from this project: Active Directory I felt for some time was a weak structure, like it was fragile and needed to be treated delicate. Now I sit with the understanding that it's more strict than anything. It follows rules and paths to a T. Windows Server 2025 I feel a bit otherwise as I question if it was stable enough for this kind of lab. I ran into missing ADMX templates, broken File Explorer policies, inconsistent GPO processing, folder redirection bugs, and unpredictable behavior. Which was great experience for me as I'm here to learn however I have done a little research and noticed that Server 2022 is widely considered the most stable and reliable version of Windows Server for enterprise environments, and after everything I experienced, I understand why.
-This lab wasn’t perfect, and it wasn’t smooth — but that’s exactly why it was valuable. I learned how Active Directory really behaves, how Group Policy actually applies, and how fragile domain trust can be. I learned how to troubleshoot problems that real IT departments deal with every day. Most importantly, I learned that building a homelab isn’t about everything going right — it’s about learning how to fix things when they go wrong or knowing when to make the best choice when things get out of hand.
+- Throughout the entire lab, I ran into issues that forced me to dig deeper into how Active Directory actually works. I learned how to diagnose secure channel failures, how to interpret gpresult HTML reports, how SYSVOL availability affects GPO processing, how AppLocker behaves when allow rules are missing, and how folder redirection silently fails when permissions aren’t perfect. I also learned how easy it is for a domain controller to become unstable on an administrative level — especially Windows Server 2025.
+
+- That leads to one of the biggest takeaways from this project: Active Directory I felt for some time was a weak structure, like it was fragile and needed to be treated delicate. Now I sit with the understanding that it's more strict than anything. It follows rules and paths to a T. Windows Server 2025 I feel a bit otherwise as I question if it was stable enough for this kind of lab. I ran into missing ADMX templates, broken File Explorer policies, inconsistent GPO processing, folder redirection bugs, and unpredictable behavior. Which was great experience for me as I'm here to learn however I have done a little research and noticed that Server 2022 is widely considered the most stable and reliable version of Windows Server for enterprise environments, and after everything I experienced, I understand why.
+
+- This lab wasn’t perfect, and it wasn’t smooth — but that’s exactly why it was valuable. I learned how Active Directory really behaves, how Group Policy actually applies, and how fragile domain trust can be. I learned how to troubleshoot problems that real IT departments deal with every day. Most importantly, I learned that building a homelab isn’t about everything going right — it’s about learning how to fix things when they go wrong or knowing when to make the best choice when things get out of hand.
 And this lab gave me plenty of opportunities to do exactly that.
