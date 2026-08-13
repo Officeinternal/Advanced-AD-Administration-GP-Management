@@ -24,7 +24,7 @@ At first, the policy wouldn’t apply, and I spent a while running gpupdate, che
 Dwight immediately tested the lockout policy by entering a one-character password five times and locking himself out. It was a small moment, but it felt like the first real sign that the domain was behaving like an actual enterprise environment.
 
 <video width="640" height="360" controls>
-  <source src="https://drive.google.com/uc?export=download&id=1Exy238X6RZT-vpI6N3PBspcPFvYdwDZh" type="video/mp4">
+  <source src="https://officeinternal.github.io/Advanced-AD-Administration-GP-Management/media/accountlockout.mp4" type="video/mp4">
 </video>
 
 Next came Restricted Groups, and this is where everything started to unravel. My goal was simple: enforce who could be a local administrator on domain-joined machines. I created the GPO, added the Administrators group, and expected it to work. It didn’t. Running gpresult /r showed that the workstation wasn’t receiving any domain GPOs at all. Only Local Group Policy was listed. That was the first symptom — the first sign that something deeper was wrong.
