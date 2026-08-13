@@ -23,7 +23,7 @@ At first, the policy wouldn’t apply, and I spent a while running gpupdate, che
 
 Dwight immediately tested the lockout policy by entering a one-character password five times and locking himself out. It was a small moment, but it felt like the first real sign that the domain was behaving like an actual enterprise environment.
 
-<video width="640" height="360" controls>
+<video width="100%" controls>
   <source src="https://officeinternal.github.io/Advanced-AD-Administration-GP-Management/media/accountlockout.mp4" type="video/mp4">
 </video>
 
