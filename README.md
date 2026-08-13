@@ -193,22 +193,22 @@ However, upon trying to update the client's policies I would very quickly assess
 
 <img width="843" height="629" alt="Screenshot 2026-08-12 150015" src="https://github.com/user-attachments/assets/4efb24e7-a19f-43f4-90b5-7bd7bb15221c" />
 
-I tried to many different commands such as ipconfig /flushdns /release /renew, net start and stop, diag:testdns, etc. Searching the dns management for old records of the a mix up in ip addresses and dns settings that was causing a collision. Dns was still looking at the old host name and I tried to delete and remake Cname and A records after a certain point.
+I tried many different commands such as ipconfig /flushdns /release /renew, net start and stop, diag:testdns, etc. To try and make any head way. Searching the dns management for old records for a mix up in ip addresses and dns settings that was causing a collision. Dns was still looking at the old host name and I tried to delete and remake Cname and A records after a certain point.
 <img width="1271" height="1085" alt="Screenshot 2026-08-12 161618" src="https://github.com/user-attachments/assets/c14d0e05-02e0-4b7c-be51-3d0897cbb744" />
 
 <img width="1055" height="260" alt="Screenshot 2026-08-12 173019" src="https://github.com/user-attachments/assets/a74bdee4-c420-4a74-b217-c4e3d997eb5a" />
 
 <img width="1043" height="526" alt="Screenshot 2026-08-12 173220" src="https://github.com/user-attachments/assets/24d8d237-349c-4265-aadf-a182e757ff6f" />
 
-Eventually I had to make the difficult decision of reverting back to a saved snapshot before I renamed the server and undoing hours of work/trouble shooting. Ultimately as much as I wanted to solve the underlying issue, it was another case where I felt this had surpassed my level of knowledge and I would save much more time with a reset.
+Eventually I had to make the difficult decision of reverting back to a saved snapshot before I renamed the server - undoing hours of work/troubleshooting in the process. Ultimately as much as I wanted to solve the underlying issue, it was another case where I felt this had surpassed my level of knowledge and I would save much more time with a reset.
 
-It wasn't too much longer after that I redid folders, permissions for sharing and security, and create a new gp policy without changing the DC's name that everything worked and flowed normally.
+It wasn't too much longer after that when I redid folders, permissions for sharing and security, and create a new gp policy without changing the DC's name that everything worked and flowed normally.
 
 
 [(mapdriveend vid)](https://github.com/user-attachments/assets/1fc7d2b5-ac11-4d3b-8d9a-571a026c5572)
 
 
-Folder redirection was the last thing I wanted to implement for this lab. I redirected Documents and Desktop to a server share with carefully configured NTFS and share permissions. 
+Folder redirection was the last thing I wanted to implement for this lab. I redirected Documents and Desktop to a server share with configured NTFS and share permissions. 
 
 <img width="814" height="709" alt="Screenshot 2026-08-12 185016" src="https://github.com/user-attachments/assets/255f1be8-902a-4a21-8b61-e3a551416951" />
 
@@ -221,11 +221,11 @@ Some users, like Dwight and ITAdmin, redirected without issues.
 [(folderredirect vid)](https://github.com/user-attachments/assets/81d5b30a-0613-479e-a541-7e24991343a0)
 
 
-Others, like Toby, ran into problems. His folder wouldn’t redirect at all, which led to more troubleshooting: checking inheritance, verifying ownership, deleting corrupted profiles, removing broken server folders, reapplying GPOs. I couldn't quite figure out why he lacked the redirect. An authorized user, within the same OU structure as the others but I even tried to log in as Jim and he too lacked the redirect. Jim is in the sales dept, same as Dwight. Folder redirection is extremely sensitive to NTFS permissions, but I triple checked that everything looked and was placed in the correct setting. Which is what sparks up my conclusion to this journey. 
+Others, like Toby, ran into problems. His folder wouldn’t redirect at all, which led to more troubleshooting: checking inheritance, verifying ownership, deleting corrupted profiles, removing broken server folders, reapplying GPOs. I couldn't quite figure out why he lacked the redirect. An authorized user, within the same OU structure as the others but I even tried to log in as Jim and he too lacked the redirect. Jim is in the sales dept, same as Dwight. They're identical with permissions and placement in every facet of the DC. Folder redirection is extremely sensitive to NTFS permissions, but I triple checked that everything looked and was placed in the correct setting. Which is what sparks up my conclusion to this journey. 
 
 
 ## Lessons Learned
-Throughout the entire lab, I ran into issues that forced me to dig deeper into how Active Directory actually works. I learned how to diagnose secure channel failures, how to interpret gpresult HTML reports, how SYSVOL availability affects GPO processing, how AppLocker behaves when allow rules are missing, and how folder redirection silently fails when permissions aren’t perfect. I also learned how easy it is for a domain controller to become unstable in on an administrative level — especially on Windows Server 2025.
-And that leads to one of the biggest takeaways from this project: Active Directory I felt for some time was a weak structure, like it was fragile and needed to be treated delicate. Now I sit with the understanding that it's more strict than anything. It follows rules and paths to a T. Windows Server 2025 I feel a bit otherwise as I question if it was stable enough for this kind of lab. I ran into missing ADMX templates, broken File Explorer policies, inconsistent GPO processing, folder redirection bugs, secure channel failures, SYSVOL instability, documentation gaps, and unpredictable behavior. Which was great experience for me as I'm here to learn however I have done a little research and noticed that Server 2022 is widely considered the most stable and reliable version of Windows Server for enterprise environments, and after everything I experienced, I understand why.
-This lab wasn’t perfect, and it wasn’t smooth — but that’s exactly why it was valuable. I learned how Active Directory really behaves, how Group Policy actually applies, and how fragile domain trust can be. I learned how to troubleshoot problems that real IT departments deal with every day. Most importantly, I learned that building a homelab isn’t about everything going right — it’s about learning how to fix things when they go wrong.
+Throughout the entire lab, I ran into issues that forced me to dig deeper into how Active Directory actually works. I learned how to diagnose secure channel failures, how to interpret gpresult HTML reports, how SYSVOL availability affects GPO processing, how AppLocker behaves when allow rules are missing, and how folder redirection silently fails when permissions aren’t perfect. I also learned how easy it is for a domain controller to become unstable on an administrative level — especially Windows Server 2025.
+And that leads to one of the biggest takeaways from this project: Active Directory I felt for some time was a weak structure, like it was fragile and needed to be treated delicate. Now I sit with the understanding that it's more strict than anything. It follows rules and paths to a T. Windows Server 2025 I feel a bit otherwise as I question if it was stable enough for this kind of lab. I ran into missing ADMX templates, broken File Explorer policies, inconsistent GPO processing, folder redirection bugs, and unpredictable behavior. Which was great experience for me as I'm here to learn however I have done a little research and noticed that Server 2022 is widely considered the most stable and reliable version of Windows Server for enterprise environments, and after everything I experienced, I understand why.
+This lab wasn’t perfect, and it wasn’t smooth — but that’s exactly why it was valuable. I learned how Active Directory really behaves, how Group Policy actually applies, and how fragile domain trust can be. I learned how to troubleshoot problems that real IT departments deal with every day. Most importantly, I learned that building a homelab isn’t about everything going right — it’s about learning how to fix things when they go wrong or knowing when to make the best choice when things get out of hand.
 And this lab gave me plenty of opportunities to do exactly that.
