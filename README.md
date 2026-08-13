@@ -9,14 +9,21 @@ The project continued from my last lab (see my profile for that repository) wher
 
 The first major task was enforcing password policies. I created a new GPO and configured minimum password length,
 
-maximum password age, 
+<img width="811" height="589" alt="Screenshot 2026-07-30 184949" src="https://github.com/user-attachments/assets/c6f97ffc-6ac9-40f8-9415-298c1f9f23c0" />
 
-complexity requirements, 
+maximum password age, complexity requirements, and lockout thresholds. 
 
-and lockout thresholds. 
+<img width="791" height="572" alt="Screenshot 2026-07-30 185416" src="https://github.com/user-attachments/assets/c9283af5-f7e3-43b0-bcaa-d0c04e0a9ae1" />
 
 
-At first, the policy wouldn’t apply, and I spent a while running gpupdate, checking link order, and verifying inheritance. Eventually, I realized the default domain policy was overriding mine. After adjusting the link order, the policy applied correctly, and running net accounts on the client confirmed the new settings. Dwight immediately tested the lockout policy by entering a one-character password five times and locking himself out. It was a small moment, but it felt like the first real sign that the domain was behaving like an actual enterprise environment.
+At first, the policy wouldn’t apply, and I spent a while running gpupdate, checking link order, and verifying inheritance. Eventually, I realized the default domain policy was overriding mine. This was the first instance where I realized just how integral placement is in Active Directory. After adjusting the link order, the policy applied correctly, and running net accounts on the client confirmed the new settings. At the time this is where I had my Security Policy, which later I learned was not optimal and I would organize better.
+
+<img width="878" height="588" alt="Screenshot 2026-07-30 191816" src="https://github.com/user-attachments/assets/a6bf62cf-1f74-43fb-9f4d-be2a07675ad1" />
+
+
+Dwight immediately tested the lockout policy by entering a one-character password five times and locking himself out. It was a small moment, but it felt like the first real sign that the domain was behaving like an actual enterprise environment.
+
+
 Next came Restricted Groups, and this is where everything started to unravel. My goal was simple: enforce who could be a local administrator on domain-joined machines. I created the GPO, added the Administrators group, and expected it to work. It didn’t. Running gpresult /r showed that the workstation wasn’t receiving any domain GPOs at all. Only Local Group Policy was listed. That was the first symptom — the first sign that something deeper was wrong.
 This moment reminded me of troubleshooting a DC electrical system. In electronics, a blown fuse is rarely the root cause; it’s just the first visible failure. The same principle applied here. The missing GPOs weren’t the real problem — they were just the symptom.
 I followed the same structured diagnostic approach I use when troubleshooting electronics. In a DC circuit, you start with a visual inspection. In Active Directory, you start by checking SYSVOL. When I tried accessing SYSVOL, it failed. That was my “burned capacitor” moment — the first sign that the domain controller itself was in trouble.
