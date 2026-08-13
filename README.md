@@ -6,6 +6,40 @@ What started as a simple AD deployment quickly turned into a deep dive into how 
 
 This lab builds on my previous project (linked in my profile), where I deployed a Windows Server 2025 VM, installed AD DS, configured DNS, and created a clean OU structure modeled after a small corporate environment. From there, the environment expanded into a full enterprise simulation with users, groups, GPOs, drive mappings, folder redirection, AppLocker rules, Restricted Groups, and real troubleshooting incidents that mirror what administrators face in production networks.
 
+## Table of Contents
+- [Overview](#overview)
+- [Lab Architecture](#lab-architecture)
+- [Domain Controller Setup](#domain-controller-setup)
+- [OU Structure](#ou-structure)
+- [Group Policy Configuration](#group-policy-configuration)
+- [Troubleshooting Incidents](#troubleshooting-incidents)
+  - [Drive Mapping Failure](#drive-mapping-failure-root-cause-dc-rename)
+  - [Restricted Groups Issue](#restricted-groups-not-applying)
+  - [Secure Channel Failures](#secure-channel-failures)
+  - [SYSVOL / Netlogon Outages](#sysvol--netlogon-outages)
+- [Lessons Learned](#lessons-learned)
+- [Demonstrations](#demonstrations)
+
+
+## Lab Architecture
+
+A minimal, realistic Active Directory environment built to simulate a small corporate network:
+
+- **Domain Controller:** Windows Server 2025  
+  - AD DS, DNS, SYSVOL/Netlogon  
+  - Hosts shared folders and GPOs  
+
+- **Client Workstation:** Windows 11 Enterprise  
+  - Domain‑joined  
+  - Used for testing GPOs, drive mapping, Restricted Groups, AppLocker, and secure channel behavior  
+
+- **Domain:** `office.internal`  
+- **DNS:** AD‑integrated  
+- **OU Structure:**  
+  - Corp Users (Sales, HR, IT, Executives)  
+  - Corp Computers (Workstations, Servers)
+
+
 
 The project continued from my last lab (see my profile for that repository) where I deployed a Windows Server 2025 VM and installed Active Directory Domain Services. I created a domain, set up DNS, and built out a clean OU structure that resembled a small corporate environment. 
 
