@@ -38,13 +38,16 @@ A minimal, realistic Active Directory environment built to simulate a small corp
 
 The project continued from my last lab (see my profile for that repository) where I deployed a Windows Server 2025 VM and installed Active Directory Domain Services. I created a domain, set up DNS, and built out a clean OU structure that resembled a small corporate environment. 
 
-The first major task was enforcing password policies. I created a new GPO and configured minimum password length,
+The first major task was enforcing password policies. I created a new GPO and configured minimum password length.
 
 <img width="811" height="589" alt="Screenshot 2026-07-30 184949" src="https://github.com/user-attachments/assets/c6f97ffc-6ac9-40f8-9415-298c1f9f23c0" />
 
-maximum password age, complexity requirements, and lockout thresholds. 
+
+Maximum password age, complexity requirements, and lockout thresholds. 
+
 
 <img width="791" height="572" alt="Screenshot 2026-07-30 185416" src="https://github.com/user-attachments/assets/c9283af5-f7e3-43b0-bcaa-d0c04e0a9ae1" />
+
 
 ## Troubleshooting Incidents
 At first, the policy wouldn’t apply, and I spent a while running gpupdate, checking link order, and verifying inheritance. Eventually, I realized the default domain policy was overriding mine. This was the first instance where I realized just how integral placement is in Active Directory. After adjusting the link order, the policy applied correctly, and running net accounts on the client confirmed the new settings. At the time this is where I had my Security Policy, which later I learned was not optimal and I would organize better.
