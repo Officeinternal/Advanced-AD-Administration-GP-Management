@@ -103,7 +103,7 @@ Once everything was rebuilt, I revisited Restricted Groups and discovered the re
 [
 
 
-(video dwight no longer admin)](https://github.com/user-attachments/assets/14269c7b-8630-4669-90fb-0c48add126ca)
+[(video dwight no longer admin)](https://github.com/user-attachments/assets/14269c7b-8630-4669-90fb-0c48add126ca)
 
 
 With the core security policies in place, I moved on to user experience and workstation control. I deployed a custom corporate wallpaper through Group Policy 
