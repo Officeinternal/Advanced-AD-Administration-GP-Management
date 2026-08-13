@@ -1,24 +1,19 @@
 # Advanced Active Directory Administration & Group Policy Management Lab
-<b>Overview:</b>
-This lab is a full end‑to‑end buildout of an enterprise‑style Active Directory environment, focused on real‑world domain administration, Group Policy engineering, workstation management, and troubleshooting. Instead of just showing how to install AD, this project documents the actual challenges that come with maintaining a Windows domain — including domain controller failures, secure channel issues, SYSVOL outages, GPO misapplication, drive‑mapping problems, Restricted Groups enforcement, and workstation domain‑join instability.
+## Overview
+This lab is a deeper dive into a focus on domain administration, Group Policy engineering, workstation management, and troubleshooting. Instead of showing how to install AD, it documents the actual challenges involved in maintaining a Windows domain — including domain controller failures, secure channel issues, SYSVOL outages, GPO misapplication, drive‑mapping problems, Restricted Groups enforcement, and domain‑join instability.
 
-What started as a simple AD deployment quickly turned into a deep dive into how Windows domains behave under stress. A straightforward setup evolved into rebuilding the domain controller, reinstalling the client workstation, diagnosing trust failures, and dealing with Windows Server 2025’s instability — ultimately teaching me far more about Active Directory than any guide or textbook could.
+What began as a basic AD deployment quickly turned into a into rigorous lesson on how Windows domains behave under stress. A straightforward setup escalated into rebuilding the domain controller, reinstalling the client workstation, diagnosing trust failures, and dealing with Windows Server 2025’s instability — ultimately teaching me far more about Active Directory than any guide or textbook could.
 
-This lab builds on my previous project (linked in my profile), where I deployed a Windows Server 2025 VM, installed AD DS, configured DNS, and created a clean OU structure modeled after a small corporate environment. From there, the environment expanded into a full enterprise simulation with users, groups, GPOs, drive mappings, folder redirection, AppLocker rules, Restricted Groups, and real troubleshooting incidents that mirror what administrators face in production networks.
+This lab builds on my previous project, where I deployed a Windows Server 2025 VM, installed AD DS, configured DNS, and created a clean OU structure modeled after a small corporate environment. From there, the environment expanded into a full enterprise simulation with users, groups, GPOs, drive mappings, folder redirection, AppLocker rules, Restricted Groups, and real troubleshooting incidents that mirror what administrators face in production networks.
 
 ## Table of Contents
 - [Overview](#overview)
 - [Lab Architecture](#lab-architecture)
-- [Domain Controller Setup](#domain-controller-setup)
-- [OU Structure](#ou-structure)
-- [Group Policy Configuration](#group-policy-configuration)
 - [Troubleshooting Incidents](#troubleshooting-incidents)
   - [Drive Mapping Failure](#drive-mapping-failure-root-cause-dc-rename)
-  - [Restricted Groups Issue](#restricted-groups-not-applying)
-  - [Secure Channel Failures](#secure-channel-failures)
-  - [SYSVOL / Netlogon Outages](#sysvol--netlogon-outages)
+  - [Restricted Groups Not Applying](#restricted-groups-not-applying)
 - [Lessons Learned](#lessons-learned)
-- [Demonstrations](#demonstrations)
+
 
 
 ## Lab Architecture
@@ -51,7 +46,7 @@ maximum password age, complexity requirements, and lockout thresholds.
 
 <img width="791" height="572" alt="Screenshot 2026-07-30 185416" src="https://github.com/user-attachments/assets/c9283af5-f7e3-43b0-bcaa-d0c04e0a9ae1" />
 
-
+## Troubleshooting Incidents
 At first, the policy wouldn’t apply, and I spent a while running gpupdate, checking link order, and verifying inheritance. Eventually, I realized the default domain policy was overriding mine. This was the first instance where I realized just how integral placement is in Active Directory. After adjusting the link order, the policy applied correctly, and running net accounts on the client confirmed the new settings. At the time this is where I had my Security Policy, which later I learned was not optimal and I would organize better.
 
 <img width="878" height="588" alt="Screenshot 2026-07-30 191816" src="https://github.com/user-attachments/assets/a6bf62cf-1f74-43fb-9f4d-be2a07675ad1" />
@@ -63,7 +58,7 @@ https://github.com/user-attachments/assets/b834c6c4-716f-4eef-a60a-94ecb90fe877
 
 <img width="973" height="731" alt="Screenshot 2026-07-30 195130" src="https://github.com/user-attachments/assets/c4de6308-caae-4e05-9729-7307530ac55e" />
 
-
+### Restricted Groups Not Applying
 Next came Restricted Groups, and this is where everything started to unravel. My goal was simple: enforce who could be a local administrator on domain-joined machines. I created the GPO, added the Administrators group, and expected it to work. It didn’t. 
 
 <img width="789" height="569" alt="Screenshot 2026-07-30 201201" src="https://github.com/user-attachments/assets/5af59f2b-0408-4a71-90ff-35638e099d95" />
@@ -169,6 +164,7 @@ This was one of the most satisfying moments in the entire lab, having restrictio
 [(almostenterprise video)](https://github.com/user-attachments/assets/9f7da3db-33a7-430e-abaf-525a3c74b402)
 
 
+### Drive Mapping Failure (Root Cause: DC Rename)
 This brings us to the next MAJOR issue I had run into with this home lab. Drive mapping. I went through the standard steps of creating a shared folder, shared users folder, and started setting permissions.
 
 
@@ -225,6 +221,7 @@ Some users, like Dwight and ITAdmin, redirected without issues.
 Others, like Toby, ran into problems. His folder wouldn’t redirect at all, which led to more troubleshooting: checking inheritance, verifying ownership, deleting corrupted profiles, removing broken server folders, reapplying GPOs. I couldn't quite figure out why he lacked the redirect. An authorized user, within the same OU structure as the others but I even tried to log in as Jim and he too lacked the redirect. Jim is in the sales dept, same as Dwight. Folder redirection is extremely sensitive to NTFS permissions, but I triple checked that everything looked and was placed in the correct setting. Which is what sparks up my conclusion to this journey. 
 
 
+## Lessons Learned
 Throughout the entire lab, I ran into issues that forced me to dig deeper into how Active Directory actually works. I learned how to diagnose secure channel failures, how to interpret gpresult HTML reports, how SYSVOL availability affects GPO processing, how AppLocker behaves when allow rules are missing, and how folder redirection silently fails when permissions aren’t perfect. I also learned how easy it is for a domain controller to become unstable in on an administrative level — especially on Windows Server 2025.
 And that leads to one of the biggest takeaways from this project: Active Directory I felt for some time was a weak structure, like it was fragile and needed to be treated delicate. Now I sit with the understanding that it's more strict than anything. It follows rules and paths to a T. Windows Server 2025 I feel a bit otherwise as I question if it was stable enough for this kind of lab. I ran into missing ADMX templates, broken File Explorer policies, inconsistent GPO processing, folder redirection bugs, secure channel failures, SYSVOL instability, documentation gaps, and unpredictable behavior. Which was great experience for me as I'm here to learn however I have done a little research and noticed that Server 2022 is widely considered the most stable and reliable version of Windows Server for enterprise environments, and after everything I experienced, I understand why.
 This lab wasn’t perfect, and it wasn’t smooth — but that’s exactly why it was valuable. I learned how Active Directory really behaves, how Group Policy actually applies, and how fragile domain trust can be. I learned how to troubleshoot problems that real IT departments deal with every day. Most importantly, I learned that building a homelab isn’t about everything going right — it’s about learning how to fix things when they go wrong.
