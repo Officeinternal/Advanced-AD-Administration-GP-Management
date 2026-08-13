@@ -1,8 +1,10 @@
-# Advanced-AD-Administration-GP-Management
-An advanced AD/GPO homelab built on Windows Server 2025, featuring secure channel recovery, GPO debugging, and a full domain rebuild.
+# Advanced Active Directory Administration & Group Policy Management Lab
+<b>Overview:</b>
+This lab is a full end‑to‑end buildout of an enterprise‑style Active Directory environment, focused on real‑world domain administration, Group Policy engineering, workstation management, and troubleshooting. Instead of just showing how to install AD, this project documents the actual challenges that come with maintaining a Windows domain — including domain controller failures, secure channel issues, SYSVOL outages, GPO misapplication, drive‑mapping problems, Restricted Groups enforcement, and workstation domain‑join instability.
 
+What started as a simple AD deployment quickly turned into a deep dive into how Windows domains behave under stress. A straightforward setup evolved into rebuilding the domain controller, reinstalling the client workstation, diagnosing trust failures, and dealing with Windows Server 2025’s instability — ultimately teaching me far more about Active Directory than any guide or textbook could.
 
-This lab began as a simple attempt to build a functional Active Directory environment, but it quickly evolved into one of the most challenging, chaotic, and educational projects I’ve ever worked on. What I thought would be a straightforward domain controller setup turned into a full simulation of enterprise workstation management, Group Policy enforcement, security hardening, application control, folder redirection, NTFS permissions, and troubleshooting that pushed me into territory I didn’t expect to explore. By the end, I had rebuilt my domain controller multiple times, rebuilt my client workstation, diagnosed secure channel failures, fought with Windows Server 2025’s instability, and learned more about Active Directory than any textbook could have taught me.
+This lab builds on my previous project (linked in my profile), where I deployed a Windows Server 2025 VM, installed AD DS, configured DNS, and created a clean OU structure modeled after a small corporate environment. From there, the environment expanded into a full enterprise simulation with users, groups, GPOs, drive mappings, folder redirection, AppLocker rules, Restricted Groups, and real troubleshooting incidents that mirror what administrators face in production networks.
 
 
 The project continued from my last lab (see my profile for that repository) where I deployed a Windows Server 2025 VM and installed Active Directory Domain Services. I created a domain, set up DNS, and built out a clean OU structure that resembled a small corporate environment. 
